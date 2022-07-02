@@ -1,0 +1,9 @@
+package model2.mvcboard;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+
+@WebServlet("/mvcboard/download.do")
+public class DownloadController extends HttpServlet {
+
+}

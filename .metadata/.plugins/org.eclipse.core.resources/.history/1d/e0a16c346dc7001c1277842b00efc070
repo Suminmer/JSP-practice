@@ -1,0 +1,38 @@
+package model2.mvcboard;
+
+import java.util.Map;
+
+import common.DBConnPool;
+
+public class MVCBoardDAO extends DBConnPool {
+	
+	public MVCBoardDAO() {
+		super();
+	}
+	
+	//검색 조건에 맞는 게시물 개수 반환
+	public int selectCount(Map<String, Object> map) {
+		int totalCount = 0;
+		
+		String query = "SELECT COUNT(*) FROM MVCBOARD";
+		
+		if (map.get("searchWord") != null) {
+			query += " WHERE " + map.get("searchField") + " LIKE '%" + map.get("searchWord") + "%'";
+		}
+		
+		try {
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			rs.next();
+			totalCount = rs.getInt(1);
+		} catch (Exception e) {
+			System.out.println("게시물 카운트 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return totalCount;
+	}
+	
+	
+
+}

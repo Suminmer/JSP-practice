@@ -1,0 +1,30 @@
+package fileupload;
+
+import common.DBConnPool;
+
+public class MyfileDAO extends DBConnPool {
+	//새로운 게시물 입력
+	public int insertFile(MyfileDTO dto) {
+		int applyResult = 0;
+		
+		try {
+			String query = "INSERT INTO MYFILE ("
+						 + "IDX, NAME, TITLE, CATE, OFILE, SFILE)"
+						 + " VALUES ("
+						 + "SEQ_BOARD_NUM.NEXTVAL, ?, ?, ?, ?, ?)";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getName());
+			psmt.setString(2, dto.getTitle());
+			psmt.setString(3, dto.getCate());
+			psmt.setString(4, dto.getOfile());
+			psmt.setString(5, dto.getSfile());
+			
+			applyResult = psmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("INSERT 중 예외 발생");
+			e.printStackTrace();
+		}
+	}
+
+}

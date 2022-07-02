@@ -1,0 +1,22 @@
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="com.oreilly.servlet.MultipartRequest"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+String saveDirectory = application.getRealPath("/Uploads");
+int maxPostSize = 1024*1000;
+String encoding = "utf-8";
+
+try {
+	//MultipartRequest 객체 생성
+	MultipartRequest mr = new MultipartRequest(request, saveDirectory, maxPostSize, encoding);
+	
+	//새로운 파일명 생성
+	String fileName = mr.getFilesystemName("attachedFile"); //현재 파일명
+	String ext = fileName.substring(fileName.lastIndexOf("."));
+	String now = new SimpleDateFormat("yyyyMMdd_HmsS").format(new Date());
+} catch (Exception e) {
+	e.printStackTrace();
+}
+%>

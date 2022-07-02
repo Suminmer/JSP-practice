@@ -1,0 +1,106 @@
+package model2.mvcboard;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import common.DBConnPool;
+
+public class MVCBoardDAO extends DBConnPool {
+	
+	public MVCBoardDAO() {
+		super();
+	}
+	
+	//검색 조건에 맞는 게시물 개수 반환
+	public int selectCount(Map<String, Object> map) {
+		int totalCount = 0;
+		
+		String query = "SELECT COUNT(*) FROM MVCBOARD";
+		
+		if (map.get("searchWord") != null) {
+			query += " WHERE " + map.get("searchField") + " LIKE '%" + map.get("searchWord") + "%'";
+		}
+		
+		try {
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			rs.next();
+			totalCount = rs.getInt(1);
+		} catch (Exception e) {
+			System.out.println("게시물 카운트 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return totalCount;
+	}
+	
+	//검색 조건에 맞는 게시물 목록 반환(페이징 기능 지원)
+	public List<MVCBoardDTO> selectListPage(Map<String, Object> map) {
+		List<MVCBoardDTO> board = new Vector<MVCBoardDTO>();
+		
+		String query = "SELECT * FROM ("
+					 + "	SELECT TB.*, ROWNUM as rNum FROM ("
+					 + "		SELECT * FROM MVCBOARD ";
+		
+		if (map.get("searchWord") != null) {
+			query += " WHERE " + map.get("searchField") + " LIKE '%" + map.get("searchWord") + "%'";
+		}
+		
+		query += " 		ORDER BY IDX DESC"
+			   + "	)TB"
+			   + ") "
+			   + "WHERE rNum BETWEEN ? AND ?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, map.get("start").toString());
+			psmt.setString(2, map.get("end").toString());
+			rs= psmt.executeQuery();
+			
+			while (rs.next()) {
+				MVCBoardDTO dto = new MVCBoardDTO();
+				
+				dto.setIdx(rs.getString("idx"));
+				dto.setName(rs.getString("name"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setOfile(rs.getString("ofile"));
+				dto.setSfile(rs.getString("sfile"));
+				dto.setDowncount(rs.getInt("downcount"));
+				dto.setPass(rs.getString("pass"));
+				dto.setVisitcount(rs.getInt("visitcount"));
+				
+				board.add(dto);
+			}
+		} catch (Exception e) {
+			System.out.println("게시물 조회 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return board;
+	}
+	
+	//게시글 데이터를 받아 DB에 추가(파일 업로드 지원)
+	public int insertWrite(MVCBoardDTO dto) {
+		int result = 0;
+		try {
+			String query = "INSERT INTO MVCBOARD( "
+						 + " IDX, NAME, TITLE, CONTENT, OFILE, SFILE, PASS) "
+						 + " VALUES( "
+						 + " SEQ_BOARD_NUM.NEXTVAL, ?, ?, ?, ?, ?, ?)";
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getName());
+			psmt.setString(2, dto.getTitle());
+			psmt.setString(3, dto.getContent());
+			psmt.setString(4, dto.getOfile());
+			psmt.setString(5, dto.getSfile());
+			psmt.setString(6, dto.getPass());
+		} catch (Exception e) {
+			System.out.println("게시물 입력 중 예외 발생");
+			e.printStackTrace();
+		}
+	}
+
+}

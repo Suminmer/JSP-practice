@@ -1,0 +1,64 @@
+package model2.mvcboard;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import common.DBConnPool;
+
+public class MVCBoardDAO extends DBConnPool {
+	
+	public MVCBoardDAO() {
+		super();
+	}
+	
+	//검색 조건에 맞는 게시물 개수 반환
+	public int selectCount(Map<String, Object> map) {
+		int totalCount = 0;
+		
+		String query = "SELECT COUNT(*) FROM MVCBOARD";
+		
+		if (map.get("searchWord") != null) {
+			query += " WHERE " + map.get("searchField") + " LIKE '%" + map.get("searchWord") + "%'";
+		}
+		
+		try {
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			rs.next();
+			totalCount = rs.getInt(1);
+		} catch (Exception e) {
+			System.out.println("게시물 카운트 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return totalCount;
+	}
+	
+	//검색 조건에 맞는 게시물 목록 반환(페이징 기능 지원)
+	public List<MVCBoardDTO> selectListPage(Map<String, Object> map) {
+		List<MVCBoardDTO> board = new Vector<MVCBoardDTO>();
+		
+		String query = "SELECT * FROM ("
+					 + "	SELECT TB.*, ROWNUM FROM ("
+					 + "		SELECT * FROM MVCBOARD ";
+		
+		if (map.get("searchWord") != null) {
+			query += "WHERE " + map.get("searchField") + " LIKE '%" + map.get("searchWord") + "'%";
+		}
+		
+		query += "		ORDER BY IDX DESC"
+			   + "	)TB"
+			   + ") "
+			   + "WHERE ROWNUM BETWEEN ? AND ?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			
+		} catch (Exception e) {
+			System.out.println("게시물 조회 중 예외 발생");
+			e.printStackTrace();
+		}
+	}
+
+}

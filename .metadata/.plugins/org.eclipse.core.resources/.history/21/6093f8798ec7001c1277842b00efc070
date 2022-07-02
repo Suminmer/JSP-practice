@@ -1,0 +1,10 @@
+package model2.mvcboard;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+
+@WebServlet("/mvcboard/view.do")
+public class ViewController extends HttpServlet {
+	
+
+}
