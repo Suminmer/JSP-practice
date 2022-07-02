@@ -1316,4 +1316,4 @@ Binding(CTRL+SHIFT+T,
 user global configuration and to define the default location to store repositories: 'C:\Users\ricki'. If this is
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
-This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+This warning can be switched off on the Team > Git > Confirmations and Warnings Preference page.
